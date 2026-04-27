@@ -21,7 +21,7 @@ export default function initScene(app: Application, textures: Textures) {
     border.height = 350
     app.stage.addChild(border)
 
-    const reels = createReels(textures)
+    const reels = createReels(app, textures)
     app.stage.addChild(reels.container)
 
     reels.setResult(["S", "C", "Q"])
