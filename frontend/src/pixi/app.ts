@@ -1,7 +1,21 @@
-import { Application } from 'pixi.js';
-import { createSymbol } from "./symbols"
+import { Application, Assets } from 'pixi.js';
+import type { Container } from "pixi.js"
+import initScene from "./scene";
+
+import starImg from "../assets/star.png";
+import cherryImg from "../assets/cherry.png";
+import questionImg from "../assets/question.png";
+import backgroundImg from "../assets/background.png";
+import borderImg from "../assets/border.png";
+import type { GameSymbol } from '../../../shared/types';
+
+type Reels = {
+    container: Container
+    setResult: (result: GameSymbol[]) => void
+}
 
 let app: Application | null = null;
+let reels: Reels = null;
 
 export async function initSlotMachine(container: HTMLElement) {
     if (app) return
@@ -14,15 +28,18 @@ export async function initSlotMachine(container: HTMLElement) {
 
     container.appendChild(app.canvas)
 
-    const s1 = createSymbol("A")
-    const s2 = createSymbol("B")
-    const s3 = createSymbol("C")
+    const textures = {
+        star: await Assets.load(starImg),
+        cherry: await Assets.load(cherryImg),
+        question: await Assets.load(questionImg),
+        background: await Assets.load(backgroundImg),
+        border: await Assets.load(borderImg)
+    }
 
-    s1.x = 100
-    s2.x = 300
-    s3.x = 500
+    reels = initScene(app, textures)
+}
 
-    s1.y = s2.y = s3.y = 200
-
-    app.stage.addChild(s1, s2, s3)
+export function spinReels(result: GameSymbol[]) {
+  if (!reels) return
+  reels.setResult(result)
 }

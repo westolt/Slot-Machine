@@ -1,18 +1,22 @@
-import { Graphics } from "pixi.js"
+import { Sprite, Texture } from "pixi.js"
 import type { GameSymbol } from "../../../shared/types"
 
-export function createSymbol(type: GameSymbol): Graphics {
-  const g = new Graphics()
+type Textures = {
+  star: Texture
+  cherry: Texture
+  question: Texture
+}
 
-  g.rect(0, 0, 150, 150)
+export function createSymbol(type: GameSymbol, textures: Textures): Sprite {
+  let texture: Texture
 
-  if (type === "💎") {
-    g.fill(0xff0000) // red
-  } else if (type === "🍒") {
-    g.fill(0x00ff00) // green
-  } else {
-    g.fill(0x0000ff) // blue
-  }
+  if (type === "S") texture = textures.star
+  else if (type === "C") texture = textures.cherry
+  else texture = textures.question
 
-  return g
+  const sprite = new Sprite(texture);
+
+  sprite.anchor.set(0.5)
+
+  return sprite
 }

@@ -1,6 +1,7 @@
 import { useRef, useEffect } from "react"
 import spinService from "./services/spin"
 import { initSlotMachine } from "./pixi/app"
+import { spinReels } from "./pixi/app"
 import './App.css'
 
 function App () {
@@ -14,7 +15,7 @@ function App () {
 
   const handleClick = async () => {
     const res = await spinService.spin();
-    handleReels(res)
+    spinReels(res.outcome)
   }
 
   return (
