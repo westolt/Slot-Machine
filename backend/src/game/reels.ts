@@ -1,9 +1,9 @@
 import { ResultSymbol } from '../../../shared/types';
 
-export const symbols: ResultSymbol[] = ['💎', '🍒', '🍋'];
+export const symbols: ResultSymbol[] = ['S', 'C', 'Q'];
 
 export const symbolWeights: Record<ResultSymbol, number> = {
-    '💎': 10,
-    '🍒': 20,
-    '🍋': 20
+    'S': 10,
+    'C': 20,
+    'Q': 20
 };
