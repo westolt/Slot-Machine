@@ -1,6 +1,7 @@
 import { Application, Assets } from 'pixi.js';
 import type { Container } from "pixi.js"
 import initScene from "./scene";
+import { initDevtools } from '@pixi/devtools';
 
 import starImg from "../assets/star.png";
 import cherryImg from "../assets/cherry.png";
@@ -25,6 +26,8 @@ export async function initSlotMachine(container: HTMLElement) {
         background: "#262b36",
         resizeTo: container
     })
+
+    initDevtools({ app })
 
     container.appendChild(app.canvas)
 

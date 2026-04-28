@@ -12,19 +12,19 @@ type Textures = {
 export default function initScene(app: Application, textures: Textures) {
 
     const bg = new Sprite(textures.background)
-    bg.width = 700
+    bg.width = 720
     bg.height = 350
     app.stage.addChild(bg)
-
-    const border = new Sprite(textures.border)
-    border.width = 700
-    border.height = 350
-    app.stage.addChild(border)
 
     const reels = createReels(app, textures)
     app.stage.addChild(reels.container)
 
     reels.setResult(["S", "C", "Q"])
+
+    const border = new Sprite(textures.border)
+    border.width = 720
+    border.height = 350
+    app.stage.addChild(border)
 
     return reels
 }

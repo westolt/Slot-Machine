@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
 import { createSymbol } from "./symbols";
 import type { GameSymbol } from "../../../shared/types";
-import type { Texture, Sprite, Application } from "pixi.js"
+import type { Texture, Application } from "pixi.js"
 
 type Textures = {
     star: Texture
@@ -11,32 +11,76 @@ type Textures = {
 
 export function createReels(app: Application, textures: Textures) {
    const container = new Container()
+   const reelContainers: Container[] = []
 
-   let currentSymbols: Sprite[] = []
+   const first = new Container()
+   const second = new Container()
+   const third = new Container()
+
+   reelContainers.push(first, second, third)
+
+   reelContainers.forEach(reel => container.addChild(reel))
+   let finalResult: GameSymbol[] | undefined;
+
    let speed = 0
    let elapsed = 0;
    const timerDuration = 3;
    let spinning = false
 
    function setResult(result: GameSymbol[]) {
-    currentSymbols.forEach(s => container.removeChild(s))
-    currentSymbols = []
-    result.forEach((symbolType, index) => {
+        console.log("Should be: ", result)
+        finalResult = result
+        
+        for (let i = 0; i < reelContainers.length; i++) {
+            reelContainers[i].removeChildren()
+            reelContainers[i].y = 0
+
+            const symbolSet: GameSymbol[] = setRandomSymbols()
+            symbolSet.splice(-1, 0, finalResult[i])
+
+            for (let j = 0; j < symbolSet.length; j++) {
+
+                const symbol = createSymbol(symbolSet[j], textures)
+
+                symbol.x = 150 + i * 200
+                symbol.y = 180 - j * 150
+                symbol.height = 200
+                symbol.width = 200
+
+                reelContainers[i].addChild(symbol)   
+            }
+        }
         spin()
-        const symbol = createSymbol(symbolType, textures)
-
-        symbol.x = 150 + index * 200
-        symbol.y = 180
-        symbol.height = 200
-        symbol.width = 200
-
-        container.addChild(symbol)
-        currentSymbols.push(symbol)
-    })
    }
 
+   function setRandomSymbols() {
+        const list = [] 
+        for (let i = 0; i < 13; i++){
+            const symbolsObject: Record<GameSymbol, number> = {
+                'S': 30,
+                'C': 40,
+                'Q': 30,
+            }
+            const symbols = Object.keys(symbolsObject) as GameSymbol[]
+            const weights = Object.values(symbolsObject);
+            const sum = weights.reduce((a, b) => a + b, 0)
+            const result = Math.random() * sum;
+
+            let compare = 0
+
+            for (let i = 0; i < weights.length; i++) {
+                compare += weights[i]
+                if (result < compare) {
+                    list.push(symbols[i])
+                    break
+                }
+            }
+        }
+        return list
+    }
+
    function spin() {
-        speed = 20
+        speed = 10
         spinning = true
     }
 
@@ -47,15 +91,15 @@ export function createReels(app: Application, textures: Textures) {
 
     app.ticker.add((ticker) => {
         if (!spinning) return
-        elapsed += ticker.deltaMS;
 
-        const seconds = Math.floor(elapsed / 1000);
+        elapsed += ticker.deltaMS
 
-        container.y += speed * ticker.deltaTime
+        reelContainers.forEach((reel) => {
+            reel.y += speed * ticker.deltaTime
+        })
 
-        if (seconds >= timerDuration) {
-            stop();
-            container.y = 0
+        if (elapsed >= timerDuration * 1000) {
+            stop()
             elapsed = 0
         }
     })
