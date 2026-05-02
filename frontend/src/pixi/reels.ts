@@ -18,9 +18,8 @@ export function createReels(app: Application, textures: Textures) {
    const third = new Container()
 
    reelContainers.push(first, second, third)
-
    reelContainers.forEach(reel => container.addChild(reel))
-   let finalResult: GameSymbol[] | undefined;
+
    const targets: number[] = []
 
    let speed = 0
@@ -28,11 +27,9 @@ export function createReels(app: Application, textures: Textures) {
    const timerDuration = 3000;
    let spinning = false
 
-   const stopped: boolean[] = [false, false, false]
+   const velocities: number[] = [0, 0, 0]
 
    function setResult(result: GameSymbol[]) {
-        console.log("Should be: ", result)
-        finalResult = result
         
         for (let i = 0; i < reelContainers.length; i++) {
             reelContainers[i].removeChildren()
@@ -40,7 +37,7 @@ export function createReels(app: Application, textures: Textures) {
             const reelLength =  61 + 10 * i
 
             const symbolSet: GameSymbol[] = setRandomSymbols(reelLength)
-            symbolSet.splice(-1, 0, finalResult[i])
+            symbolSet.splice(-1, 0, result[i])
 
             const stopIndex = symbolSet.length - 0.8
             const symbolY = 180 - stopIndex * 150
@@ -61,8 +58,8 @@ export function createReels(app: Application, textures: Textures) {
         spin()
    }
 
-   function setRandomSymbols(reelLength: number) {
-        const list = [] 
+   function setRandomSymbols(reelLength: number): GameSymbol[] {
+        const list: GameSymbol[] = [] 
         for (let i = 0; i < reelLength; i++){
             const symbolsObject: Record<GameSymbol, number> = {
                 'S': 30,
@@ -91,12 +88,24 @@ export function createReels(app: Application, textures: Textures) {
         speed = 50
         spinning = true
         elapsed = 0
-        stopped.fill(false)
     }
 
     function stop() {
         spinning = false
         speed = 0
+    }
+
+    function spring(x: number, v: number, target: number): { x: number, v: number } {
+        const k = 0.1
+        const damping = 0.9
+
+        const force = (target - x) * k
+        v += force
+        v *= damping
+
+        x += v
+
+        return {x, v}
     }
 
     app.ticker.add((ticker) => {
@@ -105,19 +114,24 @@ export function createReels(app: Application, textures: Textures) {
         elapsed += ticker.deltaMS
 
         reelContainers.forEach((reel, i) => {
-            if (stopped[i]) return
-
-            reel.y += speed * ticker.deltaTime
 
             const delay = timerDuration + i * 500
 
-            if (elapsed >= delay) {
-                reel.y = targets[i]
-                stopped[i] = true
+            if (elapsed < delay) {
+                reel.y += speed * ticker.deltaTime
+            } else {
+
+               if (elapsed >= delay && elapsed < delay + ticker.deltaMS) {
+                    velocities[i] = speed
+                }
+
+                const result = spring(reel.y, velocities[i], targets[i])
+                reel.y = result.x
+                velocities[i] = result.v
             }
         })
 
-        if (elapsed >= timerDuration + 1000) {
+        if (elapsed >= timerDuration + 2000) {
             stop()
             elapsed = 0
         }
