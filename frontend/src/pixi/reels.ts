@@ -21,11 +21,14 @@ export function createReels(app: Application, textures: Textures) {
 
    reelContainers.forEach(reel => container.addChild(reel))
    let finalResult: GameSymbol[] | undefined;
+   const targets: number[] = []
 
    let speed = 0
    let elapsed = 0;
-   const timerDuration = 3;
+   const timerDuration = 3000;
    let spinning = false
+
+   const stopped: boolean[] = [false, false, false]
 
    function setResult(result: GameSymbol[]) {
         console.log("Should be: ", result)
@@ -34,9 +37,14 @@ export function createReels(app: Application, textures: Textures) {
         for (let i = 0; i < reelContainers.length; i++) {
             reelContainers[i].removeChildren()
             reelContainers[i].y = 0
+            const reelLength =  61 + 10 * i
 
-            const symbolSet: GameSymbol[] = setRandomSymbols()
+            const symbolSet: GameSymbol[] = setRandomSymbols(reelLength)
             symbolSet.splice(-1, 0, finalResult[i])
+
+            const stopIndex = symbolSet.length - 0.8
+            const symbolY = 180 - stopIndex * 150
+            targets[i] = -symbolY
 
             for (let j = 0; j < symbolSet.length; j++) {
 
@@ -44,8 +52,8 @@ export function createReels(app: Application, textures: Textures) {
 
                 symbol.x = 150 + i * 200
                 symbol.y = 180 - j * 150
-                symbol.height = 200
-                symbol.width = 200
+                symbol.height = 150
+                symbol.width = 150
 
                 reelContainers[i].addChild(symbol)   
             }
@@ -53,9 +61,9 @@ export function createReels(app: Application, textures: Textures) {
         spin()
    }
 
-   function setRandomSymbols() {
+   function setRandomSymbols(reelLength: number) {
         const list = [] 
-        for (let i = 0; i < 13; i++){
+        for (let i = 0; i < reelLength; i++){
             const symbolsObject: Record<GameSymbol, number> = {
                 'S': 30,
                 'C': 40,
@@ -68,10 +76,10 @@ export function createReels(app: Application, textures: Textures) {
 
             let compare = 0
 
-            for (let i = 0; i < weights.length; i++) {
-                compare += weights[i]
+            for (let j = 0; j < weights.length; j++) {
+                compare += weights[j]
                 if (result < compare) {
-                    list.push(symbols[i])
+                    list.push(symbols[j])
                     break
                 }
             }
@@ -80,8 +88,10 @@ export function createReels(app: Application, textures: Textures) {
     }
 
    function spin() {
-        speed = 10
+        speed = 50
         spinning = true
+        elapsed = 0
+        stopped.fill(false)
     }
 
     function stop() {
@@ -94,11 +104,20 @@ export function createReels(app: Application, textures: Textures) {
 
         elapsed += ticker.deltaMS
 
-        reelContainers.forEach((reel) => {
+        reelContainers.forEach((reel, i) => {
+            if (stopped[i]) return
+
             reel.y += speed * ticker.deltaTime
+
+            const delay = timerDuration + i * 500
+
+            if (elapsed >= delay) {
+                reel.y = targets[i]
+                stopped[i] = true
+            }
         })
 
-        if (elapsed >= timerDuration * 1000) {
+        if (elapsed >= timerDuration + 1000) {
             stop()
             elapsed = 0
         }
