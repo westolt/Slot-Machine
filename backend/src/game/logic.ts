@@ -1,5 +1,5 @@
 import { symbolWeights, symbols } from "../game/reels";
-import { ResultSymbol } from "../../../shared/types";
+import { GameSymbol } from "../../shared/types";
 
 const weights = Object.values(symbolWeights);
 
@@ -11,7 +11,7 @@ const getRandom = (totalWeight: number) => {
     return Math.floor(Math.random() * totalWeight);
 };
 
-const getSymbol = (): ResultSymbol => {
+const getSymbol = (): GameSymbol => {
     const target = getRandom(getTotalWeight());
     let compare = 0;
     for (let i = 0; i < symbols.length; i++) {
@@ -24,8 +24,8 @@ const getSymbol = (): ResultSymbol => {
     return symbols[0];
 };
 
-const getSpin = (): ResultSymbol[] => {
-    const spin: ResultSymbol[] = [
+const getSpin = (): GameSymbol[] => {
+    const spin: GameSymbol[] = [
         getSymbol(),
         getSymbol(),
         getSymbol()
@@ -34,7 +34,7 @@ const getSpin = (): ResultSymbol[] => {
     return spin;
 };
 
-const checkWin = (spin: ResultSymbol[]): boolean => {
+const checkWin = (spin: GameSymbol[]): boolean => {
     return spin[0] === spin[1] && spin[1] === spin[2];
 };
 

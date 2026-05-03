@@ -1,5 +1,5 @@
 import { Sprite, Texture } from "pixi.js"
-import type { GameSymbol } from "../../../shared/types"
+import type { GameSymbol } from "../../shared/types"
 
 type Textures = {
   star: Texture

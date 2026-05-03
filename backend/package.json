@@ -10,10 +10,11 @@
     "dev": "ts-node-dev src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "eslint .",
-    "start": "node build/index.js"
+    "start": "node build/backend/src/index.js"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@flydotio/dockerfile": "^0.7.10",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@types/cors": "^2.8.19",
     "@types/eslint__js": "^8.42.3",
@@ -27,6 +28,7 @@
   },
   "dependencies": {
     "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
     "express": "^5.2.1"
   }
 }

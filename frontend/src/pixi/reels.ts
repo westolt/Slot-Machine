@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
 import { createSymbol } from "./symbols";
-import type { GameSymbol } from "../../../shared/types";
+import type { GameSymbol } from "../../shared/types";
 import type { Texture, Application } from "pixi.js"
 
 type Textures = {
@@ -28,6 +28,7 @@ export function createReels(app: Application, textures: Textures) {
    let spinning = false
 
    const velocities: number[] = [0, 0, 0]
+   const isSpringing: boolean[] = [false, false, false]
 
    function setResult(result: GameSymbol[]) {
         
@@ -88,6 +89,7 @@ export function createReels(app: Application, textures: Textures) {
         speed = 50
         spinning = true
         elapsed = 0
+        isSpringing.fill(false)
     }
 
     function stop() {
@@ -121,8 +123,9 @@ export function createReels(app: Application, textures: Textures) {
                 reel.y += speed * ticker.deltaTime
             } else {
 
-               if (elapsed >= delay && elapsed < delay + ticker.deltaMS) {
+               if (elapsed >= delay && isSpringing[i] === false) {
                     velocities[i] = speed
+                    isSpringing[i] = true
                 }
 
                 const result = spring(reel.y, velocities[i], targets[i])

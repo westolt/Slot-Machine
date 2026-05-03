@@ -8,7 +8,7 @@ import cherryImg from "../assets/cherry.png";
 import questionImg from "../assets/question.png";
 import backgroundImg from "../assets/background.png";
 import borderImg from "../assets/border.png";
-import type { GameSymbol } from '../../../shared/types';
+import type { GameSymbol } from '../../shared/types';
 
 type Reels = {
     container: Container
@@ -16,7 +16,7 @@ type Reels = {
 }
 
 let app: Application | null = null;
-let reels: Reels = null;
+let reels: Reels | null = null;
 
 export async function initSlotMachine(container: HTMLElement) {
     if (app) return
