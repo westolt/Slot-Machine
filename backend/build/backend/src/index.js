@@ -13,7 +13,8 @@ app.use(express_1.default.json());
 app.use((0, cors_1.default)({
     origin: [
         'http://localhost:5173',
-        'http://localhost:4173'
+        'http://localhost:4173',
+        'https://slot-machine-pink-rho.vercel.app'
     ]
 }));
 const PORT = process.env.PORT || 3000;

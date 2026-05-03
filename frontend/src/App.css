@@ -1,6 +1,6 @@
 .screen {
   height: 600px;
-  width: 800px;
+  width: auto;
   background-color: #262b36;
   display: flex;
   flex-direction: column;
